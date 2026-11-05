@@ -11,7 +11,7 @@ The lambda code is taken from various [example like this](https://medium.com/joh
 simple:
 ```hcl
 module "ec2_count_alert" {
-  source = "../../modules/ec2-count-alert"
+  source = "davidegiunchi/ec2-count-alert"
 
   region = "eu-west-1"
 
@@ -29,7 +29,7 @@ advanced arguments:
 
 ```hcl
 module "ec2_count_alert" {
-  source = "../../modules/ec2-count-alert"
+  source = "davidegiunchi/ec2-count-alert"
 
   region          = "eu-west-1"
   cron_expression = "cron(0/20 * * * ? *)"
