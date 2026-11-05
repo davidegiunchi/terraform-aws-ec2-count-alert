@@ -3,6 +3,7 @@
 Terraform module that alerts you when the number of running EC2 instances exceedes a certain number.  
 It creates a Lambda Function triggered by EventBridge to count running EC2 instances in a region and publish the count as a custom CloudWatch metric, then it creates a CloudWatch Alarm that fires when the number of running instances exceeds a given threshold.
 It can be useful to monitoring the ec2 costs and, above all, for being alerted in case of security breaches: One of the first thing an attacker would likely do if they ever got access to your AWS secret keys would be to spin up as many servers as possible for crypto mining purpose or something else, if you get noticed about this behaviour you can block it.  
+The lambda will create a new metric named *InstanceCount* on the namespace *Custom/EC2*, you can use that to graph the number of running ec2 in a dashboard.  
 The lambda code is taken from various [example like this](https://medium.com/johnveldboom/create-aws-cloudwatch-alarm-on-the-number-of-running-ec2-instances-d57af375356a).  
 
 ## Usage
@@ -31,9 +32,9 @@ module "ec2_count_alert" {
   source = "../../modules/ec2-count-alert"
 
   region          = "eu-west-1"
-  cron_expression = "cron(0/60 * * * ? *)"
+  cron_expression = "cron(0/20 * * * ? *)"
 
-  sns_topic_arn     = "arn:aws:sns:eu-west-1:123456789012:alerts"
+  sns_topic_arn     = aws_sns_topic.alerts.arn
   ec2_threshold     = 65
   alarm_description = "Too many EC2 instances running"
 
@@ -41,6 +42,10 @@ module "ec2_count_alert" {
     cost-center = "myproject"
     Environment = "production"
   }
+}
+
+resource "aws_sns_topic" "alerts" {
+  name = "alerts"
 }
 ```
 
